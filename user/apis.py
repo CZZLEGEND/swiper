@@ -37,6 +37,7 @@ def submit_vcode(request):
 
 
 def get_profile(request):
+    print('用户 ID:', request.session['uid'])
     return JsonResponse({})
 
 
