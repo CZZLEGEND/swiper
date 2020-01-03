@@ -8,15 +8,12 @@ from common import stat
 
 def get_vcode(request):
     '''用户获取验证码'''
-    try:
-        phonenum = request.GET.get('phonenum')
-        success = logics.send_sms(phonenum)
-        if success:
-            return JsonResponse({'code': stat.OK, 'data': None})
-        else:
-            return JsonResponse({'code': stat.SMS_ERR, 'data': None})
-    except:
-        pass
+    phonenum = request.GET.get('phonenum')
+    success = logics.send_sms(phonenum)
+    if success:
+        return JsonResponse({'code': stat.OK, 'data': None})
+    else:
+        return JsonResponse({'code': stat.SMS_ERR, 'data': None})
 
 
 def submit_vcode(request):
