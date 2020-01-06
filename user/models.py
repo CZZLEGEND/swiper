@@ -20,7 +20,7 @@ class User(models.Model):
     nickname = models.CharField(max_length=32, verbose_name='昵称')
     gender = models.CharField(max_length=10, default='male', choices=GENDERS, verbose_name='性别')
     birthday = models.DateField(default='1990-01-01', verbose_name='生日')
-    avatar = models.CharField(max_length=256, verbose_name='个人形象')
+    avatar = models.CharField(max_length=256, verbose_name='个人形象的URL')
     location = models.CharField(max_length=20, default='北京', choices=LOCATION, verbose_name='常居地')
 
     def to_dict(self):

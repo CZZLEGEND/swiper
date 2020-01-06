@@ -68,4 +68,9 @@ def set_profile(request):
 
 
 def upload_avatar(request):
+    '''上传个人形象'''
+    # 1. 接受用户图片，保存到本地
+    # 2. 上传到七牛云
+    # 3. 更新用户的 avatar 字段
+    # 4. 删除本地的临时文件
     return JsonResponse({})

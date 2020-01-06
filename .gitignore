@@ -132,3 +132,4 @@ dmypy.json
 .idea/
 .vscode/
 .DS_Store
+.qiniu_pythonsdk_hostscache.json
