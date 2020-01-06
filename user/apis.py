@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from django.core.cache import cache
 
 from user.models import User
+from user.models import Profile
+from user.forms import UserForm
+from user.forms import ProfileForm
 from user import logics
 from common import stat
 
@@ -37,12 +40,31 @@ def submit_vcode(request):
 
 
 def get_profile(request):
-    print('用户 ID:', request.session['uid'])
-    return JsonResponse({})
+    '''获取用户配置'''
+    profile, _ = Profile.objects.get_or_create(id=request.uid)
+    return JsonResponse({'code': stat.OK, 'data': profile.to_dict()})
 
 
 def set_profile(request):
-    return JsonResponse({})
+    '''修改用户信息，及用户配置'''
+    user_form = UserForm(request.POST)
+    profile_form = ProfileForm(request.POST)
+
+    # 验证 user 表单的数据
+    if not user_form.is_valid():
+        return JsonResponse({'code': stat.USER_FORM_ERR, 'data': user_form.errors})
+    # 验证 profile 表单的数据
+    if not profile_form.is_valid():
+        return JsonResponse({'code': stat.PROFILE_FORM_ERR, 'data': profile_form.errors})
+
+    # 修改用户数据
+    # update user set nickname='xx', gender='male' where id=uid;
+    User.objects.filter(id=request.uid).update(**user_form.cleaned_data)
+
+    # 修改 profile 数据
+    Profile.objects.update_or_create(id=request.uid, defaults=profile_form.cleaned_data)
+
+    return JsonResponse({'code': stat.OK, 'data': None})
 
 
 def upload_avatar(request):

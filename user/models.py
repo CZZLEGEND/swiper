@@ -46,7 +46,7 @@ class Profile(models.Model):
     min_dating_age = models.IntegerField(default=18, verbose_name='最小交友年龄')
     max_dating_age = models.IntegerField(default=50, verbose_name='最大交友年龄')
     vibration = models.BooleanField(default=True, verbose_name='是否开启震动')
-    only_matche = models.BooleanField(default=True, verbose_name='不让未匹配的人看我的相册')
+    only_matched = models.BooleanField(default=True, verbose_name='不让未匹配的人看我的相册')
     auto_play = models.BooleanField(default=True, verbose_name='自动播放视频')
 
     def to_dict(self):
@@ -59,6 +59,6 @@ class Profile(models.Model):
             'min_dating_age': self.min_dating_age,
             'max_dating_age': self.max_dating_age,
             'vibration': self.vibration,
-            'only_matche': self.only_matche,
+            'only_matched': self.only_matched,
             'auto_play': self.auto_play,
         }
