@@ -1,3 +1,4 @@
+import os
 import random
 from uuid import uuid4
 
@@ -5,6 +6,9 @@ import requests
 from django.core.cache import cache
 
 from swiper import conf
+from user.models import User
+from libs.qncloud import upload_to_qn
+from tasks import celery_app
 
 
 def gen_rand_code(length=6):
@@ -50,3 +54,18 @@ def save_tmp_file(tmp_file):
         for chunk in tmp_file.chunks():
             fp.write(chunk)
     return tmp_filepath, tmp_filename
+
+
+@celery_app.task
+def save_avatar(uid, avatar_file):
+    '''保存用户形象图片'''
+    filepath, filename = save_tmp_file(avatar_file)
+
+    # 2. 上传到七牛云
+    url = upload_to_qn(filepath, filename)
+
+    # 3. 更新用户的 avatar 字段
+    User.objects.filter(id=uid).update(avatar=url)
+
+    # 4. 删除本地的临时文件
+    os.remove(filepath)
