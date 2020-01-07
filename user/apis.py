@@ -1,3 +1,5 @@
+import os
+
 from django.http import JsonResponse
 from django.core.cache import cache
 
@@ -7,6 +9,7 @@ from user.forms import UserForm
 from user.forms import ProfileForm
 from user import logics
 from common import stat
+from libs.qncloud import upload_to_qn
 
 
 def get_vcode(request):
@@ -70,7 +73,16 @@ def set_profile(request):
 def upload_avatar(request):
     '''上传个人形象'''
     # 1. 接受用户图片，保存到本地
+    avatar_file = request.FILES.get('avatar')
+    filepath, filename = logics.save_tmp_file(avatar_file)
+
     # 2. 上传到七牛云
+    url = upload_to_qn(filepath, filename)
+
     # 3. 更新用户的 avatar 字段
+    User.objects.filter(id=request.uid).update(avatar=url)
+
     # 4. 删除本地的临时文件
-    return JsonResponse({})
+    os.remove(filepath)
+
+    return JsonResponse({'code': stat.OK, 'data': None})

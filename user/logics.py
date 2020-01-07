@@ -1,4 +1,5 @@
 import random
+from uuid import uuid4
 
 import requests
 from django.core.cache import cache
@@ -39,3 +40,13 @@ def send_sms(mobile):
         else:
             return False
     return False
+
+
+def save_tmp_file(tmp_file):
+    '''保存临时文件'''
+    tmp_filename = uuid4().hex
+    tmp_filepath = '/tmp/%s' % tmp_filename
+    with open(tmp_filepath, 'wb') as fp:
+        for chunk in tmp_file.chunks():
+            fp.write(chunk)
+    return tmp_filepath, tmp_filename

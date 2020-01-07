@@ -12,5 +12,8 @@ def upload_to_qn(filepath, filename):
     token = qn_auth.upload_token(conf.QN_BUCKET, filename, 3600)
 
     # 要上传文件的本地路径
-    result, info = put_file(token, filename, filepath)
-    return result, info
+    put_file(token, filename, filepath)
+
+    # 生成文件的 URL
+    file_url = '%s/%s' % (conf.QN_BASE_URL, filename)
+    return file_url
