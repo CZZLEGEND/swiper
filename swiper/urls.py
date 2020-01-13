@@ -16,11 +16,16 @@ Including another URLconf
 from django.conf.urls import url
 
 from user import apis as user_apis
+from social import apis as social_apis
 
 urlpatterns = [
+    # 用户模块接口
     url(r'^api/user/get_vcode', user_apis.get_vcode),
     url(r'^api/user/submit_vcode', user_apis.submit_vcode),
     url(r'^api/user/get_profile', user_apis.get_profile),
     url(r'^api/user/set_profile', user_apis.set_profile),
     url(r'^api/user/upload_avatar', user_apis.upload_avatar),
+
+    # 社交模块接口
+    url(r'api/social/rcmd_users', social_apis.rcmd_users),
 ]
