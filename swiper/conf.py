@@ -1,5 +1,12 @@
 '''程序逻辑和第三方平台的配置'''
 
+# Redis 配置
+REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 6,
+}
+
 
 # 云之讯短信平台配置
 YZX_SMS_API = 'https://open.ucpaas.com/ol/sms/sendsms'

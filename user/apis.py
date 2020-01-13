@@ -7,6 +7,7 @@ from user.forms import UserForm
 from user.forms import ProfileForm
 from user import logics
 from common import stat
+from common import keys
 
 
 def get_vcode(request):
@@ -24,7 +25,7 @@ def submit_vcode(request):
     phonenum = request.POST.get('phonenum')
     vcode = request.POST.get('vcode')
 
-    key = 'Vcode-%s' % phonenum
+    key = keys.VCODE_K % phonenum
     cached_vcode = cache.get(key)
     if vcode and vcode == cached_vcode:
         try:
