@@ -33,6 +33,7 @@
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
 
+from libs.http import render_json
 from common import stat
 
 
@@ -50,6 +51,12 @@ class AuthMiddleware(MiddlewareMixin):
 
         uid = request.session.get('uid')
         if not uid:
-            return JsonResponse({'code': stat.LOGIN_REQUIRED, 'data': None})
+            return render_json(stat.LoginRequired.code)
         else:
             request.uid = uid
+
+
+class LogicErrMiddleware(MiddlewareMixin):
+    def process_exception(self, request, exception):
+        if isinstance(exception, stat.LogicErr):
+            return render_json(exception.data, exception.code)

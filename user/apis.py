@@ -16,7 +16,7 @@ def get_vcode(request):
     if success:
         return render_json()
     else:
-        return render_json(None, code=stat.SMS_ERR)
+        raise stat.SmsErr
 
 
 def submit_vcode(request):
@@ -34,15 +34,15 @@ def submit_vcode(request):
 
         # 记录用户登陆状态
         request.session['uid'] = user.id
-        return render_json(user.to_dict(), code=stat.OK)
+        return render_json(user.to_dict())
     else:
-        return render_json(None, code=stat.VCODE_ERR)
+        raise stat.VcodeErr
 
 
 def get_profile(request):
     '''获取用户配置'''
     profile, _ = Profile.objects.get_or_create(id=request.uid)
-    return render_json(profile.to_dict(), code=stat.OK)
+    return render_json(profile.to_dict())
 
 
 def set_profile(request):
@@ -52,10 +52,10 @@ def set_profile(request):
 
     # 验证 user 表单的数据
     if not user_form.is_valid():
-        return render_json(user_form.errors, code=stat.USER_FORM_ERR)
+        raise stat.UserFormErr(user_form.errors)
     # 验证 profile 表单的数据
     if not profile_form.is_valid():
-        return render_json(profile_form.errors, code=stat.PROFILE_FORM_ERR)
+        raise stat.ProfileFormErr(profile_form.errors)
 
     # 修改用户数据
     # update user set nickname='xx', gender='male' where id=uid;
