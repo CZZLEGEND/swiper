@@ -23,6 +23,9 @@ class User(models.Model):
     avatar = models.CharField(max_length=256, verbose_name='个人形象的URL')
     location = models.CharField(max_length=20, default='北京', choices=LOCATION, verbose_name='常居地')
 
+    def __str__(self):
+        return str(self.id)
+
     def to_dict(self):
         return {
             'id': self.id,
