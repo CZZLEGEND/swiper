@@ -51,3 +51,10 @@ class Friend(models.Model):
             return cls.objects.create(uid1=uid1, uid2=uid2)
         except IntegrityError:
             raise stat.AreadyFriends
+
+    @classmethod
+    def break_off(cls, uid1, uid2):
+        '''绝交'''
+        # 调整 uid1 和 uid2 的顺序，小的值放前面
+        uid1, uid2 = (uid2, uid1) if uid1 > uid2 else (uid1, uid2)
+        cls.objects.filter(uid1=uid1, uid2=uid2).delete()
