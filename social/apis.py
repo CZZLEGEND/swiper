@@ -32,5 +32,13 @@ def dislike(request):
 
 
 def rewind(request):
+    '''反悔'''
     logics.rewind_last_swipe(request.uid)
     return render_json()
+
+
+def show_who_liked_me(request):
+    '''查看都有谁喜欢过我的人'''
+    users = logics.who_liked_me(request.uid)
+    result = [user.to_dict() for user in users]
+    return render_json(result)

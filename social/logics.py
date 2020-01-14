@@ -139,3 +139,18 @@ def rewind_last_swipe(uid):
 
     # 全部完成后，累加反悔次数
     rds.set(key, rewind_times + 1, 86400 * 2)  # 过期时间是为了让当天的反悔次数自然消失
+
+
+def who_liked_me(uid):
+    '''找到喜欢过自己，并且我还没有滑过对方的人'''
+    # 取出滑过的所有的用户 ID
+    sid_list = Swiped.objects.filter(uid=uid).values_list('sid', flat=True)
+
+    # 右滑或者上滑过自己的用户的 UID
+    uid_list = Swiped.objects.filter(sid=uid, stype__in=['like', 'superlike']) \
+                             .exclude(uid__in=sid_list) \
+                             .values_list('uid', flat=True)
+
+    # 取出喜欢过自己的用户数据
+    users = User.objects.filter(id__in=uid_list)
+    return users
