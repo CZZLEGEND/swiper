@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.db.utils import IntegrityError
 
 from common import stat
@@ -58,3 +59,19 @@ class Friend(models.Model):
         # 调整 uid1 和 uid2 的顺序，小的值放前面
         uid1, uid2 = (uid2, uid1) if uid1 > uid2 else (uid1, uid2)
         cls.objects.filter(uid1=uid1, uid2=uid2).delete()
+
+    @classmethod
+    def get_my_friends_id(cls, uid):
+        '''获取用户自己的好友 ID 列表'''
+        query_condition = Q(uid1=uid) | Q(uid2=uid)
+        friendship = cls.objects.filter(query_condition)
+
+        # 取出所有好友的 UID
+        friend_id_list = []
+        for f_obj in friendship:
+            if f_obj.uid1 == uid:
+                friend_id_list.append(f_obj.uid2)
+            else:
+                friend_id_list.append(f_obj.uid1)
+
+        return friend_id_list

@@ -1,6 +1,8 @@
 from common import stat
 from libs.http import render_json
 from social import logics
+from social.models import Friend
+from user.models import User
 
 
 def rcmd_users(request):
@@ -41,4 +43,12 @@ def show_who_liked_me(request):
     '''查看都有谁喜欢过我的人'''
     users = logics.who_liked_me(request.uid)
     result = [user.to_dict() for user in users]
+    return render_json(result)
+
+
+def friend_list(request):
+    '''获取自己的好友列表'''
+    friend_id_list = Friend.get_my_friends_id(request.uid)
+    friends = User.objects.filter(id__in=friend_id_list)
+    result = [user.to_dict() for user in friends]
     return render_json(result)
