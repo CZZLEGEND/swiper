@@ -23,6 +23,9 @@ class User(models.Model):
     avatar = models.CharField(max_length=256, verbose_name='个人形象的URL')
     location = models.CharField(max_length=20, default='北京', choices=LOCATION, verbose_name='常居地')
 
+    vip_id = models.IntegerField(default=1, verbose_name='用户对应的会员ID')
+    vip_end = models.DateTimeField(default='2100-01-01', verbose_name='会员过期时间')
+
     def __str__(self):
         return str(self.id)
 
