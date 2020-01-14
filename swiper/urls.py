@@ -15,5 +15,23 @@ Including another URLconf
 """
 from django.conf.urls import url
 
+from user import apis as user_apis
+from social import apis as social_apis
+
 urlpatterns = [
+    # 用户模块接口
+    url(r'^api/user/get_vcode', user_apis.get_vcode),
+    url(r'^api/user/submit_vcode', user_apis.submit_vcode),
+    url(r'^api/user/get_profile', user_apis.get_profile),
+    url(r'^api/user/set_profile', user_apis.set_profile),
+    url(r'^api/user/upload_avatar', user_apis.upload_avatar),
+
+    # 社交模块接口
+    url(r'api/social/rcmd_users', social_apis.rcmd_users),
+    url(r'api/social/like', social_apis.like),
+    url(r'api/social/superlike', social_apis.superlike),
+    url(r'api/social/dislike', social_apis.dislike),
+    url(r'api/social/rewind', social_apis.rewind),
+    url(r'api/social/show_who_liked_me', social_apis.show_who_liked_me),
+    url(r'api/social/friend_list', social_apis.friend_list),
 ]
