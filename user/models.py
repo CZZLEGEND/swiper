@@ -1,4 +1,8 @@
+import datetime
+
 from django.db import models
+
+from vip.models import Vip
 
 
 class User(models.Model):
@@ -28,6 +32,20 @@ class User(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    @property
+    def vip(self):
+        '''用户对应的 VIP Model'''
+        if not hasattr(self, '_vip'):
+            self._vip = Vip.objects.get(id=self.vip_id)
+        return self._vip
+
+    def check_vip_end_time(self):
+        '''检查VIP过期时间，如果过期，自动修改为普通用户身份'''
+        if self.vip_id != 1:
+            if datetime.datetime.now() >= self.vip_end:
+                self.vip_id = 1
+                self.save()
 
     def to_dict(self):
         return {
