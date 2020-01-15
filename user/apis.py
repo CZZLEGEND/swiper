@@ -1,3 +1,5 @@
+import logging
+
 from django.core.cache import cache
 
 from libs.http import render_json
@@ -8,6 +10,8 @@ from user.forms import ProfileForm
 from user import logics
 from common import stat
 from common import keys
+
+inf_log = logging.getLogger('inf')
 
 
 def get_vcode(request):
@@ -30,8 +34,10 @@ def submit_vcode(request):
     if vcode and vcode == cached_vcode:
         try:
             user = User.objects.get(phonenum=phonenum)  # 获取用户
+            inf_log.info(f'User({user.id:user.nickname}) login')
         except User.DoesNotExist:
             user = User.objects.create(phonenum=phonenum, nickname=phonenum)  # 创建新用户
+            inf_log.info(f'User({user.id:user.nickname}) register')
 
         # 记录用户登陆状态
         request.session['uid'] = user.id
