@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '5cx5#du3a8-^gskmp#zwz@6kc%h*@n9e+p-)+j0!*u*g5-x&q_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -127,7 +127,10 @@ STATIC_URL = '/static/'
 # 日志的配置
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+
+    # 打开或者关闭 Django 自带的日志 (NOTE: False 时可以查看Django生成的SQL语句)
+    'disable_existing_loggers': True,
+
     # 格式配置
     'formatters': {
         'simple': {
@@ -144,7 +147,6 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'DEBUG' if DEBUG else 'WARNING'
         },
         'info': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -152,7 +154,6 @@ LOGGING = {
             'when': 'midnight', # 每天凌晨零点切割日志
             'backupCount': 30,  # 日志保留 30 天
             'formatter': 'simple',
-            'level': 'INFO',
         },
         'error': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -160,23 +161,23 @@ LOGGING = {
             'when': 'W0',      # 每周一切割日志
             'backupCount': 4,  # 日志保留 4 周
             'formatter': 'verbose',
-            'level': 'WARNING',
         }
     },
     # Logger 配置
     'loggers': {
         'django': {
             'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'ERROR'
         },
         'inf': {
             'handlers': ['info'],
             'propagate': True,
-            'level': 'INFO',
+            'level': 'DEBUG' if DEBUG else 'INFO',
         },
         'err': {
             'handlers': ['error'],
             'propagate': True,
-            'level': 'WARNING',
+            'level': 'DEBUG' if DEBUG else 'ERROR',
         }
     }
 }

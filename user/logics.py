@@ -32,7 +32,7 @@ def send_sms(mobile):
         return True  # 之前发送过验证码，直接返回 True
 
     vcode = gen_rand_code()  # 产生验证码
-    inf_log.info('验证码: %s' % vcode)
+    inf_log.debug('验证码: %s' % vcode)
 
     args = conf.YZX_SMS_ARGS.copy()  # 原型模式
     args["param"] = vcode
@@ -41,7 +41,7 @@ def send_sms(mobile):
     response = requests.post(conf.YZX_SMS_API, json=args)
     if response.status_code == 200:
         result = response.json()
-        inf_log.info('短信发送状态: %s' % result.get('msg'))
+        inf_log.debug('短信发送状态: %s' % result.get('msg'))
         if result.get('code') == '000000':
             cache.set(key, vcode, 600)  # 给用户多预留一些时间
             return True
