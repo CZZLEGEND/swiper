@@ -2,6 +2,7 @@ import datetime
 
 from common import keys
 from common import stat
+from swiper import conf
 from libs.cache import rds
 from user.models import User
 from user.models import Profile
@@ -65,6 +66,9 @@ def like_someone(uid, sid):
     # 强制从自己优先队列删除 sid
     rds.lrem(keys.FIRST_RCMD_K % uid, 1, sid)
 
+    # 为被滑动用户增加积分
+    rds.zincrby('HotRank', conf.SWIPE_SCORE['like'], sid)
+
     # 检查是否对方是否右滑或上滑过自己
     if Swiped.has_liked(sid, uid):
         # 匹配成好友关系
@@ -81,6 +85,9 @@ def superlike_someone(uid, sid):
 
     # 强制从自己优先队列删除 sid
     rds.lrem(keys.FIRST_RCMD_K % uid, 1, sid)
+
+    # 为被滑动用户增加积分
+    rds.zincrby('HotRank', conf.SWIPE_SCORE['superlike'], sid)
 
     # 检查是否对方是否右滑或上滑过自己
     if Swiped.has_liked(sid, uid):
@@ -100,6 +107,9 @@ def dislike_someone(uid, sid):
 
     # 强制从自己优先队列删除 sid
     rds.lrem(keys.FIRST_RCMD_K % uid, 1, sid)
+
+    # 为被滑动用户减少积分
+    rds.zincrby('HotRank', conf.SWIPE_SCORE['dislike'], sid)
 
 
 def rewind_last_swipe(uid):
@@ -134,6 +144,9 @@ def rewind_last_swipe(uid):
         if latest_swipe.stype == 'superlike':
             rds.lrem(keys.FIRST_RCMD_K % latest_swipe.sid, 1, uid)
 
+    # 撤销滑动积分
+    rds.zincrby(keys.RANK_K, -conf.SWIPE_SCORE[latest_swipe.stype], latest_swipe.sid)
+
     # 删除最后一次滑动记录
     latest_swipe.delete()
 
@@ -154,3 +167,29 @@ def who_liked_me(uid):
     # 取出喜欢过自己的用户数据
     users = User.objects.filter(id__in=uid_list)
     return users
+
+
+def get_top_n(num):
+    '''获取积分排行最高的前 N 个用户'''
+    # 取出原始榜单数据
+    rank_data = rds.zrevrange(keys.RANK_K, 0, num - 1, withscores=True)
+    cleaned_rank = [[int(uid), int(score)]  for uid, score in rank_data]  # 对原始数据进行简单清洗
+
+    # 取出所有的用户数据
+    uid_list = [uid for uid, _ in cleaned_rank]  # 取出每个用户 UID
+    users = User.objects.filter(id__in=uid_list).only('id', 'nickname', 'avatar')
+    users = sorted(users, key=lambda user: uid_list.index(user.id))  # 按照 uid 在 uid_list 中的顺序重新排列
+
+    # 组装数据
+    result = {}
+    for index, (uid, score) in enumerate(cleaned_rank):
+        rank = index + 1
+        user = users[index]
+        user_dict = {
+            'id': uid,
+            'score': score,
+            'nickname': user.nickname,
+            'avatar': user.avatar,
+        }
+        result[rank] = user_dict
+    return result

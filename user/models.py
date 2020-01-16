@@ -40,6 +40,16 @@ class User(models.Model):
             self._vip = Vip.objects.get(id=self.vip_id)
         return self._vip
 
+    def set_vip(self, vip_id):
+        '''设置用户的VIP'''
+        vip = Vip.objects.get(id=vip_id)
+
+        self.vip_id = vip_id
+        self.vip_end = datetime.datetime.now() + datetime.timedelta(vip.duration)
+        del self._vip
+
+        self.save()
+
     def check_vip_end_time(self):
         '''检查VIP过期时间，如果过期，自动修改为普通用户身份'''
         if self.vip_id != 1:

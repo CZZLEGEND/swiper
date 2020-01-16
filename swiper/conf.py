@@ -1,5 +1,12 @@
 '''程序逻辑和第三方平台的配置'''
 
+SWIPE_SCORE = {
+    'like': 5,
+    'superlike': 7,
+    'dislike': -5,
+}
+
+
 # Redis 配置
 REDIS = {
     'host': 'localhost',
