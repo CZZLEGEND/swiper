@@ -1,3 +1,5 @@
+from datetime import date, time, datetime
+
 from django.db import models
 from django.db.models import query
 
@@ -49,6 +51,23 @@ def save(self, force_insert=False, force_update=False, using=None,
     rds.set(key, self)
 
 
+def to_dict(self, *exclude):
+    '''将 Model 模型转换成一个字典'''
+    attr_dict = {}
+    for field in self._meta.fields:
+        if field.name in exclude:
+            continue
+
+        key = field.name
+        value = getattr(self, key)
+        if isinstance(value, (date, time, datetime)):
+            value = str(value)
+
+        attr_dict[key] = value
+
+    return attr_dict
+
+
 def patch_model():
     '''通过 Monkey Patch (猴子补丁) 的方式为 Django 的 ORM 增加统一的缓存处理'''
     # 修改 get 方法
@@ -58,3 +77,6 @@ def patch_model():
     # 修改 save 方法
     models.Model._save = models.Model.save
     models.Model.save = save
+
+    # 统一为所有的 Model 增加 to_dict 方法
+    models.Model.to_dict = to_dict
