@@ -53,7 +53,7 @@ class AuthMiddleware(MiddlewareMixin):
 
         uid = request.session.get('uid')
         if not uid:
-            return render_json(stat.LoginRequired.code)
+            return render_json(data='LoginRequired', code=stat.LoginRequired.code)
         else:
             request.uid = uid
 
